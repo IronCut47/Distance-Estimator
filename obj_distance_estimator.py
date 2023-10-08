@@ -23,9 +23,7 @@ class_names = []
 with open("new.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
 #  setttng up opencv net
-# yoloNet = cv.dnn.readNet('yolov4-custom_last.weights', 'yolov4-train_custom.cfg')
 yoloNet = cv.dnn.readNet('yolov4-tiny-custom_best.weights', 'yolov4-tiny-custom.cfg')
-# yoloNet = cv.dnn.readNet('yolov4-tiny.weights', 'yolov4-tiny.cfg')
 
 yoloNet.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
 yoloNet.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
@@ -74,44 +72,37 @@ def distance_finder(focal_length, real_object_width, width_in_frmae):
 ref_person = cv.imread('ReferenceImages/image14.png')
 ref_car = cv.imread('ReferenceImages/test.png')
 
-
 car_data = object_detector(ref_car)
 print(car_data)
 car_width_in_rf = car_data[0][1]
 print(car_width_in_rf)
 
-
 # print(f"Person width in pixels : {person_width_in_rf} mobile width in pixel: {car_width_in_rf}")
 
 # finding focal length 
 # focal_person = focal_length_finder(KNOWN_DISTANCE, PERSON_WIDTH, person_width_in_rf)
-
 focal_car = focal_length_finder(KNOWN_DISTANCE, CAR_LENGTH, car_width_in_rf)
-cap = cv.VideoCapture(1)
-while True:
-    ret, frame = cap.read()
 
+def distance(frame):
     data = object_detector(frame) 
     for d in data:
         if d[0] =='car':
             distance = distance_finder(focal_car, CAR_LENGTH, d[1])
             print(distance)
             x, y = d[2]
-        elif d[0] =='tyre':
-            distance = distance_finder (focal_car, MOBILE_WIDTH, d[1])
-            x, y = d[2]
+        # elif d[0] =='tyre':
+        #     distance = distance_finder (focal_car, MOBILE_WIDTH, d[1])
+        #     x, y = d[2]
         # elif d[0] =='person':
         #     distance = distance_finder (focal_person, PERSON_WIDTH, d[1])
         #     x, y = d[2]
-        
+
         cv.rectangle(frame, (x, y-3), (x+150, y+23),BLACK,-1 )
         cv.putText(frame, f'Dis: {round(distance,2)} inch', (x+5,y+13), FONTS, 0.48, GREEN, 2)
 
-    cv.imshow('frame',frame)
-    
-    key = cv.waitKey(1)
-    if key ==ord('q'):
-        break
-cv.destroyAllWindows()
-cap.release()
+    return frame
+frame = cv.imread('test_image/test.png')
+output_frame = distance(frame)
 
+cv.imshow("Output Frame", output_frame)
+cv.waitKey(0)
