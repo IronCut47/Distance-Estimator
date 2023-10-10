@@ -83,12 +83,14 @@ print(car_width_in_rf)
 # focal_person = focal_length_finder(KNOWN_DISTANCE, PERSON_WIDTH, person_width_in_rf)
 focal_car = focal_length_finder(KNOWN_DISTANCE, CAR_LENGTH, car_width_in_rf)
 
-def distance(frame):
+def distance(frame, id):
     data = object_detector(frame) 
     for d in data:
         if d[0] =='car':
             distance = distance_finder(focal_car, CAR_LENGTH, d[1])
             print(distance)
+            if distance < 50:
+                print('yes', id)
             x, y = d[2]
         # elif d[0] =='tyre':
         #     distance = distance_finder (focal_car, MOBILE_WIDTH, d[1])
@@ -100,9 +102,10 @@ def distance(frame):
         cv.rectangle(frame, (x, y-3), (x+150, y+23),BLACK,-1 )
         cv.putText(frame, f'Dis: {round(distance,2)} inch', (x+5,y+13), FONTS, 0.48, GREEN, 2)
 
-    return frame
-frame = cv.imread('test_image/test.png')
-output_frame = distance(frame)
+    # return id
 
-cv.imshow("Output Frame", output_frame)
-cv.waitKey(0)
+frame = cv.imread('test_image/test.png')
+output_frame = distance(frame, 1) #Function that returns yes + id when object is closer then a certain threshold.
+
+# cv.imshow("Output Frame", output_frame)
+# cv.waitKey(0)
