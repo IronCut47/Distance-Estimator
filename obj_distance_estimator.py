@@ -9,8 +9,8 @@ CONFIDENCE_THRESHOLD = 0.4
 NMS_THRESHOLD = 0.3
 
 COLORS = [(255,0,0),(255,0,255),(0, 255, 255), (255, 255, 0), (0, 255, 0), (255, 0, 0)]
-GREEN =(0,255,0)
-BLACK =(0,0,0)
+GREEN = (0,255,0)
+BLACK = (0,0,0)
 
 FONTS = cv.FONT_HERSHEY_COMPLEX
 
@@ -52,9 +52,9 @@ ref_person = cv.imread('ReferenceImages/image14.png')
 ref_car = cv.imread('ReferenceImages/test.png')
 
 car_data = object_detector(ref_car)
-print(car_data)
+# print(car_data)
 car_width_in_rf = car_data[0][1]
-print(car_width_in_rf)
+# print(car_width_in_rf)
 
 focal_car = focal_length_finder(KNOWN_DISTANCE, CAR_LENGTH, car_width_in_rf)
 
@@ -78,7 +78,7 @@ def distance(frame, id):
 
     return response
 
-frame = cv.imread('test_image/test.png')
-output = distance(frame, 1)
+# frame = cv.imread('test_image/test.png')
+# output = distance(frame, 1)
 
-print(output)
+# print(output)
