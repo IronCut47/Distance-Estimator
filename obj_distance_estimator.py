@@ -1,28 +1,23 @@
 import cv2 as cv 
-import numpy as np
 
-# Distance constants 
 KNOWN_DISTANCE = 45 #INCHES
 PERSON_WIDTH = 16 #INCHES
 MOBILE_WIDTH = 3.0 #INCHES
 CAR_LENGTH = 200 
 
-# Object detector constant 
 CONFIDENCE_THRESHOLD = 0.4
 NMS_THRESHOLD = 0.3
 
-# colors for object detected
 COLORS = [(255,0,0),(255,0,255),(0, 255, 255), (255, 255, 0), (0, 255, 0), (255, 0, 0)]
 GREEN =(0,255,0)
 BLACK =(0,0,0)
-# defining fonts 
+
 FONTS = cv.FONT_HERSHEY_COMPLEX
 
-# getting class names from classes.txt file 
 class_names = []
-with open("new.txt", "r") as f:
+with open("static/new.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
-#  setttng up opencv net
+
 yoloNet = cv.dnn.readNet('yolov4-tiny-custom_best.weights', 'yolov4-tiny-custom.cfg')
 
 yoloNet.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
@@ -31,44 +26,28 @@ yoloNet.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
 model = cv.dnn_DetectionModel(yoloNet)
 model.setInputParams(size=(416, 416), scale=1/255, swapRB=True)
 
-# object detector funciton /method
 def object_detector(image):
     classes, scores, boxes = model.detect(image, CONFIDENCE_THRESHOLD, NMS_THRESHOLD)
-    # creating empty list to add objects data
     data_list =[]
     for (classid, score, box) in zip(classes, scores, boxes):
-        # define color of each, object based on its class id 
         color= COLORS[int(classid) % len(COLORS)]
-    
+
         label = "%s : %f" % (class_names[classid], score)
 
-        # draw rectangle on and label on object
         cv.rectangle(image, box, color, 2)
         cv.putText(image, label, (box[0], box[1]-14), FONTS, 0.5, color, 2)
-    
-        # getting the data 
-        # 1: class name  2: object width in pixels, 3: position where have to draw text(distance)
-        if classid ==0: # person class id 
+
+        if classid in [0, 1, 2]:
             data_list.append([class_names[classid], box[2], (box[0], box[1]-2)])
-        elif classid ==1:
-            data_list.append([class_names[classid], box[2], (box[0], box[1]-2)])
-        elif classid ==2:
-            data_list.append([class_names[classid], box[2], (box[0], box[1]-2)])
-        # if you want inclulde more classes then you have to simply add more [elif] statements here
-        # returning list containing the object data. 
+            
     return data_list
 
 def focal_length_finder (measured_distance, real_width, width_in_rf):
-    focal_length = (width_in_rf * measured_distance) / real_width
+    return (width_in_rf * measured_distance) / real_width
 
-    return focal_length
-
-# distance finder function 
 def distance_finder(focal_length, real_object_width, width_in_frmae):
-    distance = (real_object_width * focal_length) / width_in_frmae
-    return distance
+    return (real_object_width * focal_length) / width_in_frmae
 
-# reading the reference image from dir 
 ref_person = cv.imread('ReferenceImages/image14.png')
 ref_car = cv.imread('ReferenceImages/test.png')
 
@@ -77,43 +56,29 @@ print(car_data)
 car_width_in_rf = car_data[0][1]
 print(car_width_in_rf)
 
-# print(f"Person width in pixels : {person_width_in_rf} mobile width in pixel: {car_width_in_rf}")
-
-# finding focal length 
-# focal_person = focal_length_finder(KNOWN_DISTANCE, PERSON_WIDTH, person_width_in_rf)
 focal_car = focal_length_finder(KNOWN_DISTANCE, CAR_LENGTH, car_width_in_rf)
-
-info = {}
 
 def distance(frame, id):
     data = object_detector(frame)
-    info['detected'] = False 
-    info['id'] = id
+    response = {'detected': False, 'id': id}
     for d in data:
         if d[0] =='car':
             distance = distance_finder(focal_car, CAR_LENGTH, d[1])
-            info['class'] = 'car'
-            info['distance'] = distance
+            response['class'] = 'car'
+            response['distance'] = distance
             if distance < 50:
-                info['detected'] = True
+                response['detected'] = True
             x, y = d[2]
-        # elif d[0] =='tyre':
-        #     distance = distance_finder (focal_car, MOBILE_WIDTH, d[1])
-        #     x, y = d[2]
-        # elif d[0] =='person':
-        #     distance = distance_finder (focal_person, PERSON_WIDTH, d[1])
-        #     x, y = d[2]
 
+        """        
         cv.rectangle(frame, (x, y-3), (x+150, y+23),BLACK,-1 )
         cv.putText(frame, f'Dis: {round(distance,2)} inch', (x+5,y+13), FONTS, 0.48, GREEN, 2)
+        
+        """
 
-    return info
+    return response
 
 frame = cv.imread('test_image/test.png')
-output = distance(frame, 1) #Function that returns yes + id when object is closer then a certain threshold.
+output = distance(frame, 1)
 
 print(output)
-
-# {class : 'car/person', id : 1, distance: 4.24, detected : True}
-# cv.imshow("Output Frame", output_frame)
-# cv.waitKey(0)
