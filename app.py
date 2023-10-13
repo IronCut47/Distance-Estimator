@@ -7,7 +7,7 @@ from obj_distance_estimator import distance
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
-def hello(id):
+def hello():
     return "Hello Server Working Fine"
 
 @app.route('/get_distance/<id>', methods=['POST'])
