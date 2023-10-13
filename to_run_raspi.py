@@ -4,14 +4,23 @@ import json
 import cv2
 import time
 
-addr = 'http://localhost:5000' # to change
+addr = 'http://44.197.200.107:8000/'
 
-test_url = f'{addr}/get_distance/1'
+####################################################################################################
+
+# 1 --> Left
+# 2 --> Back
+# 3 --> Right
+
+send_frames_latency = 1
+camera_id = 1 
+test_url = f'{addr}/get_distance/{str(camera_id)}'
+cameras = [0]
+
+####################################################################################################
 
 content_type = 'image/jpeg'
 headers = {'content-type': content_type}
-
-cameras = [0]
 
 while True:
     for camera_id in cameras:
@@ -22,4 +31,4 @@ while True:
             response = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
             print(json.loads(response.text))
         cap.release()
-        time.sleep(1)
+        time.sleep(send_frames_latency)
