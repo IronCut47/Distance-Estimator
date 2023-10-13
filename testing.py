@@ -2,10 +2,10 @@ import cv2 as cv
 import numpy as np
 
 # Distance constants 
-KNOWN_DISTANCE = 45 #INCHES
+KNOWN_DISTANCE = 80 #INCHES
 PERSON_WIDTH = 16 #INCHES
 MOBILE_WIDTH = 3.0 #INCHES
-CAR_LENGTH = 200 
+CAR_LENGTH = 75 # front(106) side(52) [^_^ ye kya karu mai]
 
 # Object detector constant 
 CONFIDENCE_THRESHOLD = 0.4
@@ -114,4 +114,3 @@ while True:
         break
 cv.destroyAllWindows()
 cap.release()
-
