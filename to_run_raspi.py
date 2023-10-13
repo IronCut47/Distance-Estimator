@@ -28,7 +28,10 @@ while True:
         ret, frame = cap.read()
         if ret:
             _, img_encoded = cv2.imencode('.png', frame)
-            response = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
-            print(json.loads(response.text))
+            try:
+                response = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
+                print(json.loads(response.text))
+            except:
+                print("--JSON DECODE")
         cap.release()
         time.sleep(send_frames_latency)
