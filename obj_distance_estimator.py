@@ -18,7 +18,7 @@ class_names = []
 with open("static/new.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
 
-yoloNet = cv.dnn.readNet('yolov4-tiny-custom_best.weights', 'yolov4-tiny-custom.cfg')
+yoloNet = cv.dnn.readNet('pretrained_model/yolov4-tiny.weights', 'pretrained_model/yolov4-tiny.cfg')
 
 yoloNet.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
 yoloNet.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
