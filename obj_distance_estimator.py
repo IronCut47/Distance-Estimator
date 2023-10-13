@@ -15,7 +15,7 @@ BLACK = (0,0,0)
 FONTS = cv.FONT_HERSHEY_COMPLEX
 
 class_names = []
-with open("static/new.txt", "r") as f:
+with open("static/classes.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
 
 yoloNet = cv.dnn.readNet('pretrained_model/yolov4-tiny.weights', 'pretrained_model/yolov4-tiny.cfg')
@@ -37,7 +37,7 @@ def object_detector(image):
         cv.rectangle(image, box, color, 2)
         cv.putText(image, label, (box[0], box[1]-14), FONTS, 0.5, color, 2)
 
-        if classid in [0, 1, 2]:
+        if classid in [0, 2, 67]: # Person, car, mobile phone
             data_list.append([class_names[classid], box[2], (box[0], box[1]-2)])
             
     return data_list
@@ -49,7 +49,14 @@ def distance_finder(focal_length, real_object_width, width_in_frmae):
     return (real_object_width * focal_length) / width_in_frmae
 
 ref_person = cv.imread('ReferenceImages/image14.png')
+ref_mobile = cv.imread('ReferenceImages/image4.png')
 ref_car = cv.imread('ReferenceImages/test.png')
+
+person_data = object_detector(ref_person)
+person_width_in_rf = person_data[0][1]
+
+mobile_data = object_detector(ref_mobile)
+mobile_width_in_rf = mobile_data[1][1]
 
 car_data = object_detector(ref_car)
 # print(car_data)
@@ -57,18 +64,36 @@ car_width_in_rf = car_data[0][1]
 # print(car_width_in_rf)
 
 focal_car = focal_length_finder(KNOWN_DISTANCE, CAR_LENGTH, car_width_in_rf)
+focal_person = focal_length_finder(KNOWN_DISTANCE, PERSON_WIDTH, person_width_in_rf)
+focal_mobile = focal_length_finder(KNOWN_DISTANCE, MOBILE_WIDTH, mobile_width_in_rf)
 
 def distance(frame, id):
     data = object_detector(frame)
     response = {'detected': False, 'id': id}
     for d in data:
-        if d[0] =='car':
-            distance = distance_finder(focal_car, CAR_LENGTH, d[1])
-            response['class'] = 'car'
+        if d[0] =='person':
+            distance_og = distance_finder(focal_person, PERSON_WIDTH, d[1])
+            distance = round(distance_og)
+            response['class'] = 'person'
             response['distance'] = distance
             if distance < 50:
                 response['detected'] = True
             x, y = d[2]
+        elif d[0] =='cell phone':
+            distance_og = distance_finder(focal_mobile, MOBILE_WIDTH, d[1])
+            distance = round(distance_og)
+            response['class'] = 'cell phone'
+            response['distance'] = distance
+            if distance < 50:
+                response['detected'] = True
+            x, y = d[2]   
+        # elif d[0] =='car':
+        #     distance = distance_finder(focal_car, CAR_LENGTH, d[1])
+        #     response['class'] = 'car'
+        #     response['distance'] = distance
+        #     if distance < 50:
+        #         response['detected'] = True
+        #     x, y = d[2]
 
         """        
         cv.rectangle(frame, (x, y-3), (x+150, y+23),BLACK,-1 )
