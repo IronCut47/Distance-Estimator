@@ -3,9 +3,10 @@ import numpy as np
 
 # Distance constants 
 KNOWN_DISTANCE = 45 #INCHES
-PERSON_WIDTH = 16 #INCHES
+KNOWN_DISTANCE_PERSON = 44
+PERSON_WIDTH = 19 #INCHES
 MOBILE_WIDTH = 3.0 #INCHES
-# CAR_LENGTH = 200 
+
 
 # Object detector constant 
 CONFIDENCE_THRESHOLD = 0.4
@@ -85,6 +86,7 @@ print(f"Person width in pixels : {person_width_in_rf} mobile width in pixel: {mo
 focal_person = focal_length_finder(KNOWN_DISTANCE, PERSON_WIDTH, person_width_in_rf)
 
 focal_mobile = focal_length_finder(KNOWN_DISTANCE, MOBILE_WIDTH, mobile_width_in_rf)
+
 cap = cv.VideoCapture(0)
 while True:
     ret, frame = cap.read()
@@ -92,7 +94,7 @@ while True:
     data = object_detector(frame) 
     for d in data:
         if d[0] =='person':
-            distance = distance_finder(focal_person, PERSON_WIDTH, d[1])
+            distance = distance_finder(focal_person, PERSON_WIDTH, d[1]) - 15
             x, y = d[2]
         elif d[0] =='cell phone':
             distance = distance_finder (focal_mobile, MOBILE_WIDTH, d[1])
