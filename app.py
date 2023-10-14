@@ -11,7 +11,6 @@ def get_distance(id):
     r = request
     nparr = np.fromstring(r.data, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    cv2.imwrite("result.jpg", img) 
     response = distance(img, id)
     response_pickled = jsonpickle.encode(response)
 
@@ -22,4 +21,4 @@ def hello():
     return "hello"
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8000)
+    app.run(host='0.0.0.0',port=8000,debug=True)

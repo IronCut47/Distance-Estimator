@@ -43,6 +43,7 @@ while True:
                             #motor run left if id is 1
                             if obj['id'] == '1':
                                 run_right_motor()
+                                # time.sleep(1)
                             if obj['id'] == '2':
                                 run_left_motor()
                             if obj['id'] == '0':
