@@ -39,15 +39,16 @@ while True:
                 if response['data'] != []:
                     for obj in response['data']:
                         if 'detected' in obj.keys():
-                            print(obj['id'], obj['class'], obj['distance'], "-->" ,obj['detected'], obj['id'])
-                            #motor run left if id is 1
-                            if obj['id'] == '1':
-                                run_right_motor()
-                                # time.sleep(1)
-                            if obj['id'] == '2':
-                                run_left_motor()
-                            if obj['id'] == '0':
-                                run_both_motors()
+                            if obj['detected'] == True:
+                                print(obj['id'], obj['class'], obj['distance'], "-->" ,obj['detected'], obj['id'])
+                                #motor run left if id is 1
+                                if obj['id'] == '1':
+                                    run_right_motor()
+                                    # time.sleep(1)
+                                if obj['id'] == '2':
+                                    run_left_motor()
+                                if obj['id'] == '0':
+                                    run_both_motors()
             except JSONDecodeError:
                 print("-->JSON DECODE")
         cap.release()
