@@ -5,7 +5,7 @@ import json
 import cv2
 import time
 
-addr = 'http://44.197.200.107:8000/'
+addr = 'http://192.168.182.191:8000/'
 
 ####################################################################################################
 
@@ -32,8 +32,9 @@ while True:
         if ret:
             _, img_encoded = cv2.imencode('.png', frame)
             try:
-                response = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
-                print(json.loads(response.text), "Camera NAME", test_cameras[camera_id])
+                response_raw = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
+                response = json.loads(response.text)
+                print(response, "Camera NAME", test_cameras[camera_id])
             except JSONDecodeError:
                 print("-->JSON DECODE")
         cap.release()
