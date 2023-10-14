@@ -39,7 +39,7 @@ while True:
                 if response['data'] != []:
                     for obj in response['data']:
                         if 'detected' in obj.keys():
-                            print(obj['id'], obj['class'], obj['distance'], "-->" ,obj['detected'], obj['camera_id'])
+                            print(obj['id'], obj['class'], obj['distance'], "-->" ,obj['detected'], obj['id'])
                             #motor run left if id is 1
                             if obj['id'] == '1':
                                 run_right_motor()
