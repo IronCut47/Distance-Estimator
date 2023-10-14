@@ -33,8 +33,10 @@ while True:
             _, img_encoded = cv2.imencode('.png', frame)
             try:
                 response_raw = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
-                response = json.loads(response.text)
-                print(response, "Camera NAME", test_cameras[camera_id])
+                response = json.loads(response_raw.text)
+                if response['data'] != []:
+                    for obj in response:
+                        print(obj, "Camera NAME->", test_cameras[camera_id])
             except JSONDecodeError:
                 print("-->JSON DECODE")
         cap.release()
