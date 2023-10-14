@@ -4,6 +4,8 @@ import requests
 import json
 import cv2
 import time
+from motor_run import run_both_motors,run_left_motor,run_right_motor
+
 
 addr = 'http://192.168.182.191:8000/'
 
@@ -13,12 +15,12 @@ addr = 'http://192.168.182.191:8000/'
 # 0 --> Back
 # 3 --> Right
 
-send_frames_latency = 1
+send_frames_latency = 0.3
 camera_id = 1 
 test_url = f'{addr}/get_distance/{str(camera_id)}'
 
 test_cameras = {0: "back"}
-cameras = {0: "back", 1 : "left", 2 : "right"}
+cameras = {0: "back", 1 : "right", 2 : "left"}
 
 ####################################################################################################
 
@@ -35,8 +37,16 @@ while True:
                 response_raw = requests.post(test_url, data=img_encoded.tostring(), headers=headers)
                 response = json.loads(response_raw.text)
                 if response['data'] != []:
-                    for obj in response:
-                        print(obj, "Camera NAME->", test_cameras[camera_id])
+                    for obj in response['data']:
+                        if obj['detected']:
+                            print(obj['id'], obj['class'], obj['distance'], "-->" ,obj['detected'], obj['camera_id'])
+                            #motor run left if id is 1
+                            if obj['id'] == '1':
+                                run_right_motor()
+                            if obj['id'] == '2':
+                                run_left_motor()
+                            if obj['id'] == '0':
+                                run_both_motors()
             except JSONDecodeError:
                 print("-->JSON DECODE")
         cap.release()

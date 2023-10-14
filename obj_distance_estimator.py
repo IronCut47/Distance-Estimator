@@ -11,6 +11,7 @@ NMS_THRESHOLD = 0.3
 COLORS = [(255,0,0),(255,0,255),(0, 255, 255), (255, 255, 0), (0, 255, 0), (255, 0, 0)]
 GREEN = (0,255,0)
 BLACK = (0,0,0)
+distance_throshold = 50
 
 FONTS = cv.FONT_HERSHEY_COMPLEX
 
@@ -69,6 +70,7 @@ focal_mobile = focal_length_finder(KNOWN_DISTANCE, MOBILE_WIDTH, mobile_width_in
 
 def distance(frame, id):
     data = object_detector(frame)
+    final_response = []
     response = {'detected': False, 'id': id}
     for d in data:
         if d[0] =='person':
@@ -76,17 +78,21 @@ def distance(frame, id):
             distance = round(distance_og)
             response['class'] = 'person'
             response['distance'] = distance
-            if distance < 50:
+            if distance < distance_throshold:
                 response['detected'] = True
+                final_response['id'] = id
             x, y = d[2]
-        elif d[0] =='cell phone':
+            final_response.append(response)
+        if d[0] =='cell phone':
             distance_og = distance_finder(focal_mobile, MOBILE_WIDTH, d[1])
             distance = round(distance_og)
             response['class'] = 'cell phone'
             response['distance'] = distance
-            if distance < 50:
+            if distance < distance_throshold:
                 response['detected'] = True
-            x, y = d[2]   
+                final_response['id'] = id
+            x, y = d[2]
+            final_response.append(response)   
         # elif d[0] =='car':
         #     distance = distance_finder(focal_car, CAR_LENGTH, d[1])
         #     response['class'] = 'car'
@@ -101,7 +107,7 @@ def distance(frame, id):
         
         """
 
-    return response
+    return {'data': final_response}
 
 # frame = cv.imread('test_image/test.png')
 # output = distance(frame, 1)
