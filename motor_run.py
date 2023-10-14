@@ -11,6 +11,8 @@ in3 = 27
 in4 = 22
 en2 = 4
 
+GPIO.setwarnings(False)
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(in1,GPIO.OUT)
 GPIO.setup(in2,GPIO.OUT)

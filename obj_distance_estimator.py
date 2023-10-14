@@ -80,7 +80,7 @@ def distance(frame, id):
             response['distance'] = distance
             if distance < distance_throshold:
                 response['detected'] = True
-                final_response['id'] = id
+                response['id'] = id
             x, y = d[2]
             final_response.append(response)
         if d[0] =='cell phone':
@@ -90,7 +90,7 @@ def distance(frame, id):
             response['distance'] = distance
             if distance < distance_throshold:
                 response['detected'] = True
-                final_response['id'] = id
+                response['id'] = id
             x, y = d[2]
             final_response.append(response)   
         # elif d[0] =='car':
