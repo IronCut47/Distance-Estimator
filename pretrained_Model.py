@@ -25,7 +25,7 @@ with open("classes.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
 #  setttng up opencv net
 # yoloNet = cv.dnn.readNet('yolov4-custom_last.weights', 'yolov4-train_custom.cfg')
-yoloNet = cv.dnn.readNet('Pretrained model/yolov4-tiny.weights', 'Pretrained model/yolov4-tiny.cfg')
+yoloNet = cv.dnn.readNet('pretrained_model/yolov4-tiny.weights', 'pretrained_model/yolov4-tiny.cfg')
 
 yoloNet.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
 yoloNet.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
